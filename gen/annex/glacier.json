@@ -3,6 +3,16 @@
         "serviceAbbreviation": "Glacier"
     },
     "shapes": {
+      "InitiateJob": {
+        "required": [
+          "accountId",
+          "vaultName",
+          "jobParameters"
+        ]
+      },
+      "Type": {
+        "enum": ["select", "archive-retrieval", "inventory-retrieval"]
+      }
       "InitiateMultipartUploadInput": {
         "required": [
           "accountId",
