@@ -27,9 +27,9 @@ module Network.AWS.Glacier.InitiateJob
       initiateJob
     , InitiateJob
     -- * Request Lenses
-    , ijJobParameters
     , ijAccountId
     , ijVaultName
+    , ijJobParameters
 
     -- * Destructuring the Response
     , initiateJobResponse
@@ -54,9 +54,9 @@ import Network.AWS.Response
 --
 -- /See:/ 'initiateJob' smart constructor.
 data InitiateJob = InitiateJob'
-  { _ijJobParameters :: !(Maybe JobParameters)
-  , _ijAccountId     :: !Text
+  { _ijAccountId     :: !Text
   , _ijVaultName     :: !Text
+  , _ijJobParameters :: !JobParameters
   } deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
@@ -64,26 +64,23 @@ data InitiateJob = InitiateJob'
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'ijJobParameters' - Provides options for specifying job information.
---
 -- * 'ijAccountId' - The @AccountId@ value is the AWS account ID of the account that owns the vault. You can either specify an AWS account ID or optionally a single '@-@ ' (hyphen), in which case Amazon Glacier uses the AWS account ID associated with the credentials used to sign the request. If you use an account ID, do not include any hyphens ('-') in the ID.
 --
 -- * 'ijVaultName' - The name of the vault.
+--
+-- * 'ijJobParameters' - Provides options for specifying job information.
 initiateJob
     :: Text -- ^ 'ijAccountId'
     -> Text -- ^ 'ijVaultName'
+    -> JobParameters -- ^ 'ijJobParameters'
     -> InitiateJob
-initiateJob pAccountId_ pVaultName_ =
+initiateJob pAccountId_ pVaultName_ pJobParameters_ =
   InitiateJob'
-    { _ijJobParameters = Nothing
-    , _ijAccountId = pAccountId_
+    { _ijAccountId = pAccountId_
     , _ijVaultName = pVaultName_
+    , _ijJobParameters = pJobParameters_
     }
 
-
--- | Provides options for specifying job information.
-ijJobParameters :: Lens' InitiateJob (Maybe JobParameters)
-ijJobParameters = lens _ijJobParameters (\ s a -> s{_ijJobParameters = a})
 
 -- | The @AccountId@ value is the AWS account ID of the account that owns the vault. You can either specify an AWS account ID or optionally a single '@-@ ' (hyphen), in which case Amazon Glacier uses the AWS account ID associated with the credentials used to sign the request. If you use an account ID, do not include any hyphens ('-') in the ID.
 ijAccountId :: Lens' InitiateJob Text
@@ -93,9 +90,13 @@ ijAccountId = lens _ijAccountId (\ s a -> s{_ijAccountId = a})
 ijVaultName :: Lens' InitiateJob Text
 ijVaultName = lens _ijVaultName (\ s a -> s{_ijVaultName = a})
 
+-- | Provides options for specifying job information.
+ijJobParameters :: Lens' InitiateJob JobParameters
+ijJobParameters = lens _ijJobParameters (\ s a -> s{_ijJobParameters = a})
+
 instance AWSRequest InitiateJob where
         type Rs InitiateJob = InitiateJobResponse
-        request = postJSON glacier
+        request = glacierVersionHeader2012 . postJSON glacier
         response
           = receiveEmpty
               (\ s h x ->
@@ -116,7 +117,7 @@ instance ToJSON InitiateJob where
         toJSON InitiateJob'{..}
           = object
               (catMaybes
-                 [("jobParameters" .=) <$> _ijJobParameters])
+                 [Just ("jobParameters" .= _ijJobParameters)])
 
 instance ToPath InitiateJob where
         toPath InitiateJob'{..}

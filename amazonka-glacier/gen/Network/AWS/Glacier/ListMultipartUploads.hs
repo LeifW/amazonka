@@ -122,7 +122,7 @@ instance AWSPager ListMultipartUploads where
 instance AWSRequest ListMultipartUploads where
         type Rs ListMultipartUploads =
              ListMultipartUploadsResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveJSON
               (\ s h x ->

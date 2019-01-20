@@ -89,7 +89,7 @@ dvVaultName = lens _dvVaultName (\ s a -> s{_dvVaultName = a})
 
 instance AWSRequest DescribeVault where
         type Rs DescribeVault = DescribeVaultOutput
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response = receiveJSON (\ s h x -> eitherParseJSON x)
 
 instance Hashable DescribeVault where

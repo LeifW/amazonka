@@ -106,7 +106,7 @@ instance AWSPager ListVaults where
 
 instance AWSRequest ListVaults where
         type Rs ListVaults = ListVaultsResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveJSON
               (\ s h x ->

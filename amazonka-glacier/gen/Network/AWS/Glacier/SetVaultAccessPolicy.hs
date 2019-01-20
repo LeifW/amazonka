@@ -91,7 +91,7 @@ svapVaultName = lens _svapVaultName (\ s a -> s{_svapVaultName = a})
 instance AWSRequest SetVaultAccessPolicy where
         type Rs SetVaultAccessPolicy =
              SetVaultAccessPolicyResponse
-        request = putJSON glacier
+        request = glacierVersionHeader2012 . putJSON glacier
         response = receiveNull SetVaultAccessPolicyResponse'
 
 instance Hashable SetVaultAccessPolicy where

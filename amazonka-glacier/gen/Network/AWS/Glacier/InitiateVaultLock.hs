@@ -111,7 +111,7 @@ ivlVaultName = lens _ivlVaultName (\ s a -> s{_ivlVaultName = a})
 
 instance AWSRequest InitiateVaultLock where
         type Rs InitiateVaultLock = InitiateVaultLockResponse
-        request = postJSON glacier
+        request = glacierVersionHeader2012 . postJSON glacier
         response
           = receiveEmpty
               (\ s h x ->

@@ -73,7 +73,7 @@ gdrpAccountId = lens _gdrpAccountId (\ s a -> s{_gdrpAccountId = a})
 instance AWSRequest GetDataRetrievalPolicy where
         type Rs GetDataRetrievalPolicy =
              GetDataRetrievalPolicyResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveJSON
               (\ s h x ->

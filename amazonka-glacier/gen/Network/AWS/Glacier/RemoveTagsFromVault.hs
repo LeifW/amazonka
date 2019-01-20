@@ -91,7 +91,7 @@ rtfvVaultName = lens _rtfvVaultName (\ s a -> s{_rtfvVaultName = a})
 instance AWSRequest RemoveTagsFromVault where
         type Rs RemoveTagsFromVault =
              RemoveTagsFromVaultResponse
-        request = postJSON glacier
+        request = glacierVersionHeader2012 . postJSON glacier
         response = receiveNull RemoveTagsFromVaultResponse'
 
 instance Hashable RemoveTagsFromVault where

@@ -20,25 +20,25 @@ module Network.AWS.Glacier.Types.Sum where
 import Network.AWS.Prelude
 
 data ActionCode
-  = ArchiveRetrieval
-  | InventoryRetrieval
-  | Select
+  = ACArchiveRetrieval
+  | ACInventoryRetrieval
+  | ACSelect
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
 instance FromText ActionCode where
     parser = takeLowerText >>= \case
-        "archiveretrieval" -> pure ArchiveRetrieval
-        "inventoryretrieval" -> pure InventoryRetrieval
-        "select" -> pure Select
+        "archiveretrieval" -> pure ACArchiveRetrieval
+        "inventoryretrieval" -> pure ACInventoryRetrieval
+        "select" -> pure ACSelect
         e -> fromTextError $ "Failure parsing ActionCode from value: '" <> e
            <> "'. Accepted values: archiveretrieval, inventoryretrieval, select"
 
 instance ToText ActionCode where
     toText = \case
-        ArchiveRetrieval -> "ArchiveRetrieval"
-        InventoryRetrieval -> "InventoryRetrieval"
-        Select -> "Select"
+        ACArchiveRetrieval -> "ArchiveRetrieval"
+        ACInventoryRetrieval -> "InventoryRetrieval"
+        ACSelect -> "Select"
 
 instance Hashable     ActionCode
 instance NFData       ActionCode
@@ -316,26 +316,56 @@ instance ToJSON StorageClass where
 instance FromJSON StorageClass where
     parseJSON = parseJSONText "StorageClass"
 
+data Tier
+  = TBulk
+  | TExpedited
+  | TStandard
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText Tier where
+    parser = takeLowerText >>= \case
+        "bulk" -> pure TBulk
+        "expedited" -> pure TExpedited
+        "standard" -> pure TStandard
+        e -> fromTextError $ "Failure parsing Tier from value: '" <> e
+           <> "'. Accepted values: bulk, expedited, standard"
+
+instance ToText Tier where
+    toText = \case
+        TBulk -> "Bulk"
+        TExpedited -> "Expedited"
+        TStandard -> "Standard"
+
+instance Hashable     Tier
+instance NFData       Tier
+instance ToByteString Tier
+instance ToQuery      Tier
+instance ToHeader     Tier
+
+instance ToJSON Tier where
+    toJSON = toJSONText
+
 data Type
-  = AmazonCustomerByEmail
-  | CanonicalUser
-  | Group
+  = ArchiveRetrieval
+  | InventoryRetrieval
+  | Select
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
 instance FromText Type where
     parser = takeLowerText >>= \case
-        "amazoncustomerbyemail" -> pure AmazonCustomerByEmail
-        "canonicaluser" -> pure CanonicalUser
-        "group" -> pure Group
+        "archive-retrieval" -> pure ArchiveRetrieval
+        "inventory-retrieval" -> pure InventoryRetrieval
+        "select" -> pure Select
         e -> fromTextError $ "Failure parsing Type from value: '" <> e
-           <> "'. Accepted values: amazoncustomerbyemail, canonicaluser, group"
+           <> "'. Accepted values: archive-retrieval, inventory-retrieval, select"
 
 instance ToText Type where
     toText = \case
-        AmazonCustomerByEmail -> "AmazonCustomerByEmail"
-        CanonicalUser -> "CanonicalUser"
-        Group -> "Group"
+        ArchiveRetrieval -> "archive-retrieval"
+        InventoryRetrieval -> "inventory-retrieval"
+        Select -> "select"
 
 instance Hashable     Type
 instance NFData       Type

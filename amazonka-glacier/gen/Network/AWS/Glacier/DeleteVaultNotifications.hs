@@ -84,7 +84,7 @@ dvnVaultName = lens _dvnVaultName (\ s a -> s{_dvnVaultName = a})
 instance AWSRequest DeleteVaultNotifications where
         type Rs DeleteVaultNotifications =
              DeleteVaultNotificationsResponse
-        request = delete glacier
+        request = glacierVersionHeader2012 . delete glacier
         response
           = receiveNull DeleteVaultNotificationsResponse'
 

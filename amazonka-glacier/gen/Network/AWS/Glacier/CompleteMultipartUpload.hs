@@ -37,19 +37,19 @@ module Network.AWS.Glacier.CompleteMultipartUpload
       completeMultipartUpload
     , CompleteMultipartUpload
     -- * Request Lenses
-    , cmuChecksum
-    , cmuArchiveSize
     , cmuAccountId
     , cmuVaultName
     , cmuUploadId
+    , cmuArchiveSize
+    , cmuChecksum
 
     -- * Destructuring the Response
     , archiveCreationOutput
     , ArchiveCreationOutput
     -- * Response Lenses
-    , acoArchiveId
     , acoChecksum
     , acoLocation
+    , acoArchiveId
     ) where
 
 import Network.AWS.Glacier.Types
@@ -65,11 +65,11 @@ import Network.AWS.Response
 --
 -- /See:/ 'completeMultipartUpload' smart constructor.
 data CompleteMultipartUpload = CompleteMultipartUpload'
-  { _cmuChecksum    :: !(Maybe Text)
-  , _cmuArchiveSize :: !(Maybe Text)
-  , _cmuAccountId   :: !Text
+  { _cmuAccountId   :: !Text
   , _cmuVaultName   :: !Text
   , _cmuUploadId    :: !Text
+  , _cmuArchiveSize :: !Text
+  , _cmuChecksum    :: !Text
   } deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
@@ -77,37 +77,31 @@ data CompleteMultipartUpload = CompleteMultipartUpload'
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'cmuChecksum' - The SHA256 tree hash of the entire archive. It is the tree hash of SHA256 tree hash of the individual parts. If the value you specify in the request does not match the SHA256 tree hash of the final assembled archive as computed by Amazon Glacier, Amazon Glacier returns an error and the request fails.
---
--- * 'cmuArchiveSize' - The total size, in bytes, of the entire archive. This value should be the sum of all the sizes of the individual parts that you uploaded.
---
 -- * 'cmuAccountId' - The @AccountId@ value is the AWS account ID of the account that owns the vault. You can either specify an AWS account ID or optionally a single '@-@ ' (hyphen), in which case Amazon Glacier uses the AWS account ID associated with the credentials used to sign the request. If you use an account ID, do not include any hyphens ('-') in the ID.
 --
 -- * 'cmuVaultName' - The name of the vault.
 --
 -- * 'cmuUploadId' - The upload ID of the multipart upload.
+--
+-- * 'cmuArchiveSize' - The total size, in bytes, of the entire archive. This value should be the sum of all the sizes of the individual parts that you uploaded.
+--
+-- * 'cmuChecksum' - The SHA256 tree hash of the entire archive. It is the tree hash of SHA256 tree hash of the individual parts. If the value you specify in the request does not match the SHA256 tree hash of the final assembled archive as computed by Amazon Glacier, Amazon Glacier returns an error and the request fails.
 completeMultipartUpload
     :: Text -- ^ 'cmuAccountId'
     -> Text -- ^ 'cmuVaultName'
     -> Text -- ^ 'cmuUploadId'
+    -> Text -- ^ 'cmuArchiveSize'
+    -> Text -- ^ 'cmuChecksum'
     -> CompleteMultipartUpload
-completeMultipartUpload pAccountId_ pVaultName_ pUploadId_ =
+completeMultipartUpload pAccountId_ pVaultName_ pUploadId_ pArchiveSize_ pChecksum_ =
   CompleteMultipartUpload'
-    { _cmuChecksum = Nothing
-    , _cmuArchiveSize = Nothing
-    , _cmuAccountId = pAccountId_
+    { _cmuAccountId = pAccountId_
     , _cmuVaultName = pVaultName_
     , _cmuUploadId = pUploadId_
+    , _cmuArchiveSize = pArchiveSize_
+    , _cmuChecksum = pChecksum_
     }
 
-
--- | The SHA256 tree hash of the entire archive. It is the tree hash of SHA256 tree hash of the individual parts. If the value you specify in the request does not match the SHA256 tree hash of the final assembled archive as computed by Amazon Glacier, Amazon Glacier returns an error and the request fails.
-cmuChecksum :: Lens' CompleteMultipartUpload (Maybe Text)
-cmuChecksum = lens _cmuChecksum (\ s a -> s{_cmuChecksum = a})
-
--- | The total size, in bytes, of the entire archive. This value should be the sum of all the sizes of the individual parts that you uploaded.
-cmuArchiveSize :: Lens' CompleteMultipartUpload (Maybe Text)
-cmuArchiveSize = lens _cmuArchiveSize (\ s a -> s{_cmuArchiveSize = a})
 
 -- | The @AccountId@ value is the AWS account ID of the account that owns the vault. You can either specify an AWS account ID or optionally a single '@-@ ' (hyphen), in which case Amazon Glacier uses the AWS account ID associated with the credentials used to sign the request. If you use an account ID, do not include any hyphens ('-') in the ID.
 cmuAccountId :: Lens' CompleteMultipartUpload Text
@@ -121,17 +115,25 @@ cmuVaultName = lens _cmuVaultName (\ s a -> s{_cmuVaultName = a})
 cmuUploadId :: Lens' CompleteMultipartUpload Text
 cmuUploadId = lens _cmuUploadId (\ s a -> s{_cmuUploadId = a})
 
+-- | The total size, in bytes, of the entire archive. This value should be the sum of all the sizes of the individual parts that you uploaded.
+cmuArchiveSize :: Lens' CompleteMultipartUpload Text
+cmuArchiveSize = lens _cmuArchiveSize (\ s a -> s{_cmuArchiveSize = a})
+
+-- | The SHA256 tree hash of the entire archive. It is the tree hash of SHA256 tree hash of the individual parts. If the value you specify in the request does not match the SHA256 tree hash of the final assembled archive as computed by Amazon Glacier, Amazon Glacier returns an error and the request fails.
+cmuChecksum :: Lens' CompleteMultipartUpload Text
+cmuChecksum = lens _cmuChecksum (\ s a -> s{_cmuChecksum = a})
+
 instance AWSRequest CompleteMultipartUpload where
         type Rs CompleteMultipartUpload =
              ArchiveCreationOutput
-        request = postJSON glacier
+        request = glacierVersionHeader2012 . postJSON glacier
         response
           = receiveEmpty
               (\ s h x ->
                  ArchiveCreationOutput' <$>
-                   (h .#? "x-amz-archive-id") <*>
-                     (h .#? "x-amz-sha256-tree-hash")
-                     <*> (h .#? "Location"))
+                   (h .#? "x-amz-sha256-tree-hash") <*>
+                     (h .#? "Location")
+                     <*> (h .# "x-amz-archive-id"))
 
 instance Hashable CompleteMultipartUpload where
 
@@ -140,8 +142,8 @@ instance NFData CompleteMultipartUpload where
 instance ToHeaders CompleteMultipartUpload where
         toHeaders CompleteMultipartUpload'{..}
           = mconcat
-              ["x-amz-sha256-tree-hash" =# _cmuChecksum,
-               "x-amz-archive-size" =# _cmuArchiveSize]
+              ["x-amz-archive-size" =# _cmuArchiveSize,
+               "x-amz-sha256-tree-hash" =# _cmuChecksum]
 
 instance ToJSON CompleteMultipartUpload where
         toJSON = const (Object mempty)

@@ -81,7 +81,7 @@ ltfvVaultName = lens _ltfvVaultName (\ s a -> s{_ltfvVaultName = a})
 
 instance AWSRequest ListTagsForVault where
         type Rs ListTagsForVault = ListTagsForVaultResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveJSON
               (\ s h x ->

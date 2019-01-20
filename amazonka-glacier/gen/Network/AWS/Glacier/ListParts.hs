@@ -134,7 +134,7 @@ instance AWSPager ListParts where
 
 instance AWSRequest ListParts where
         type Rs ListParts = ListPartsResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveJSON
               (\ s h x ->

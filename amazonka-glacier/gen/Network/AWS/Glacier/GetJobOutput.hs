@@ -122,7 +122,7 @@ gjoJobId = lens _gjoJobId (\ s a -> s{_gjoJobId = a})
 
 instance AWSRequest GetJobOutput where
         type Rs GetJobOutput = GetJobOutputResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveBody
               (\ s h x ->

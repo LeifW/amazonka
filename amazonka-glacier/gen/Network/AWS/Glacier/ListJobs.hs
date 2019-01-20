@@ -139,7 +139,7 @@ instance AWSPager ListJobs where
 
 instance AWSRequest ListJobs where
         type Rs ListJobs = ListJobsResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveJSON
               (\ s h x ->

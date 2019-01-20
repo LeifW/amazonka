@@ -37,18 +37,18 @@ module Network.AWS.Glacier.InitiateMultipartUpload
       initiateMultipartUpload
     , InitiateMultipartUpload
     -- * Request Lenses
-    , imuPartSize
     , imuArchiveDescription
     , imuAccountId
     , imuVaultName
+    , imuPartSize
 
     -- * Destructuring the Response
     , initiateMultipartUploadResponse
     , InitiateMultipartUploadResponse
     -- * Response Lenses
     , imursLocation
-    , imursUploadId
     , imursResponseStatus
+    , imursUploadId
     ) where
 
 import Network.AWS.Glacier.Types
@@ -64,10 +64,10 @@ import Network.AWS.Response
 --
 -- /See:/ 'initiateMultipartUpload' smart constructor.
 data InitiateMultipartUpload = InitiateMultipartUpload'
-  { _imuPartSize           :: !(Maybe Text)
-  , _imuArchiveDescription :: !(Maybe Text)
+  { _imuArchiveDescription :: !(Maybe Text)
   , _imuAccountId          :: !Text
   , _imuVaultName          :: !Text
+  , _imuPartSize           :: !Text
   } deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
@@ -75,29 +75,26 @@ data InitiateMultipartUpload = InitiateMultipartUpload'
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'imuPartSize' - The size of each part except the last, in bytes. The last part can be smaller than this part size.
---
 -- * 'imuArchiveDescription' - The archive description that you are uploading in parts. The part size must be a megabyte (1024 KB) multiplied by a power of 2, for example 1048576 (1 MB), 2097152 (2 MB), 4194304 (4 MB), 8388608 (8 MB), and so on. The minimum allowable part size is 1 MB, and the maximum is 4 GB (4096 MB).
 --
 -- * 'imuAccountId' - The @AccountId@ value is the AWS account ID of the account that owns the vault. You can either specify an AWS account ID or optionally a single '@-@ ' (hyphen), in which case Amazon Glacier uses the AWS account ID associated with the credentials used to sign the request. If you use an account ID, do not include any hyphens ('-') in the ID.
 --
 -- * 'imuVaultName' - The name of the vault.
+--
+-- * 'imuPartSize' - The size of each part except the last, in bytes. The last part can be smaller than this part size.
 initiateMultipartUpload
     :: Text -- ^ 'imuAccountId'
     -> Text -- ^ 'imuVaultName'
+    -> Text -- ^ 'imuPartSize'
     -> InitiateMultipartUpload
-initiateMultipartUpload pAccountId_ pVaultName_ =
+initiateMultipartUpload pAccountId_ pVaultName_ pPartSize_ =
   InitiateMultipartUpload'
-    { _imuPartSize = Nothing
-    , _imuArchiveDescription = Nothing
+    { _imuArchiveDescription = Nothing
     , _imuAccountId = pAccountId_
     , _imuVaultName = pVaultName_
+    , _imuPartSize = pPartSize_
     }
 
-
--- | The size of each part except the last, in bytes. The last part can be smaller than this part size.
-imuPartSize :: Lens' InitiateMultipartUpload (Maybe Text)
-imuPartSize = lens _imuPartSize (\ s a -> s{_imuPartSize = a})
 
 -- | The archive description that you are uploading in parts. The part size must be a megabyte (1024 KB) multiplied by a power of 2, for example 1048576 (1 MB), 2097152 (2 MB), 4194304 (4 MB), 8388608 (8 MB), and so on. The minimum allowable part size is 1 MB, and the maximum is 4 GB (4096 MB).
 imuArchiveDescription :: Lens' InitiateMultipartUpload (Maybe Text)
@@ -111,17 +108,20 @@ imuAccountId = lens _imuAccountId (\ s a -> s{_imuAccountId = a})
 imuVaultName :: Lens' InitiateMultipartUpload Text
 imuVaultName = lens _imuVaultName (\ s a -> s{_imuVaultName = a})
 
+-- | The size of each part except the last, in bytes. The last part can be smaller than this part size.
+imuPartSize :: Lens' InitiateMultipartUpload Text
+imuPartSize = lens _imuPartSize (\ s a -> s{_imuPartSize = a})
+
 instance AWSRequest InitiateMultipartUpload where
         type Rs InitiateMultipartUpload =
              InitiateMultipartUploadResponse
-        request = postJSON glacier
+        request = glacierVersionHeader2012 . postJSON glacier
         response
           = receiveEmpty
               (\ s h x ->
                  InitiateMultipartUploadResponse' <$>
-                   (h .#? "Location") <*>
-                     (h .#? "x-amz-multipart-upload-id")
-                     <*> (pure (fromEnum s)))
+                   (h .#? "Location") <*> (pure (fromEnum s)) <*>
+                     (h .# "x-amz-multipart-upload-id"))
 
 instance Hashable InitiateMultipartUpload where
 
@@ -130,9 +130,9 @@ instance NFData InitiateMultipartUpload where
 instance ToHeaders InitiateMultipartUpload where
         toHeaders InitiateMultipartUpload'{..}
           = mconcat
-              ["x-amz-part-size" =# _imuPartSize,
-               "x-amz-archive-description" =#
-                 _imuArchiveDescription]
+              ["x-amz-archive-description" =#
+                 _imuArchiveDescription,
+               "x-amz-part-size" =# _imuPartSize]
 
 instance ToJSON InitiateMultipartUpload where
         toJSON = const (Object mempty)
@@ -153,8 +153,8 @@ instance ToQuery InitiateMultipartUpload where
 -- /See:/ 'initiateMultipartUploadResponse' smart constructor.
 data InitiateMultipartUploadResponse = InitiateMultipartUploadResponse'
   { _imursLocation       :: !(Maybe Text)
-  , _imursUploadId       :: !(Maybe Text)
   , _imursResponseStatus :: !Int
+  , _imursUploadId       :: !Text
   } deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
@@ -164,17 +164,18 @@ data InitiateMultipartUploadResponse = InitiateMultipartUploadResponse'
 --
 -- * 'imursLocation' - The relative URI path of the multipart upload ID Amazon Glacier created.
 --
--- * 'imursUploadId' - The ID of the multipart upload. This value is also included as part of the location.
---
 -- * 'imursResponseStatus' - -- | The response status code.
+--
+-- * 'imursUploadId' - The ID of the multipart upload. This value is also included as part of the location.
 initiateMultipartUploadResponse
     :: Int -- ^ 'imursResponseStatus'
+    -> Text -- ^ 'imursUploadId'
     -> InitiateMultipartUploadResponse
-initiateMultipartUploadResponse pResponseStatus_ =
+initiateMultipartUploadResponse pResponseStatus_ pUploadId_ =
   InitiateMultipartUploadResponse'
     { _imursLocation = Nothing
-    , _imursUploadId = Nothing
     , _imursResponseStatus = pResponseStatus_
+    , _imursUploadId = pUploadId_
     }
 
 
@@ -182,12 +183,12 @@ initiateMultipartUploadResponse pResponseStatus_ =
 imursLocation :: Lens' InitiateMultipartUploadResponse (Maybe Text)
 imursLocation = lens _imursLocation (\ s a -> s{_imursLocation = a})
 
--- | The ID of the multipart upload. This value is also included as part of the location.
-imursUploadId :: Lens' InitiateMultipartUploadResponse (Maybe Text)
-imursUploadId = lens _imursUploadId (\ s a -> s{_imursUploadId = a})
-
 -- | -- | The response status code.
 imursResponseStatus :: Lens' InitiateMultipartUploadResponse Int
 imursResponseStatus = lens _imursResponseStatus (\ s a -> s{_imursResponseStatus = a})
+
+-- | The ID of the multipart upload. This value is also included as part of the location.
+imursUploadId :: Lens' InitiateMultipartUploadResponse Text
+imursUploadId = lens _imursUploadId (\ s a -> s{_imursUploadId = a})
 
 instance NFData InitiateMultipartUploadResponse where

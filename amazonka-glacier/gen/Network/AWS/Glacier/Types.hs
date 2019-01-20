@@ -52,15 +52,18 @@ module Network.AWS.Glacier.Types
     -- * StorageClass
     , StorageClass (..)
 
+    -- * Tier
+    , Tier (..)
+
     -- * Type
     , Type (..)
 
     -- * ArchiveCreationOutput
     , ArchiveCreationOutput
     , archiveCreationOutput
-    , acoArchiveId
     , acoChecksum
     , acoLocation
+    , acoArchiveId
 
     -- * CSVInput
     , CSVInput
@@ -182,8 +185,8 @@ module Network.AWS.Glacier.Types
     , jpSNSTopic
     , jpOutputLocation
     , jpTier
-    , jpType
     , jpDescription
+    , jpType
 
     -- * OutputLocation
     , OutputLocation

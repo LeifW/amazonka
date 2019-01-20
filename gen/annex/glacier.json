@@ -3,21 +3,43 @@
         "serviceAbbreviation": "Glacier"
     },
     "shapes": {
-      "InitiateJob": {
+      "InitiateJobInput": {
         "required": [
           "accountId",
           "vaultName",
           "jobParameters"
         ]
       },
-      "Type": {
-        "enum": ["select", "archive-retrieval", "inventory-retrieval"]
+      "JobParameters": {
+          "type" : "structure",
+          "required": [ "Type" ],
+      "members":{
+        "Type":{
+          "shape" : "Type"
+        },
+        "Tier":{
+          "shape" : "Tier"
+        }
       }
+    },
+        "Type":{
+          "type" : "string",
+          "enum": ["select", "archive-retrieval", "inventory-retrieval"]
+        },
+        "Tier":{
+          "type" : "string",
+          "enum": ["Expedited", "Standard", "Bulk"]
+        },
       "InitiateMultipartUploadInput": {
         "required": [
           "accountId",
           "vaultName",
           "partSize"
+        ]
+      },
+      "InitiateMultipartUploadOutput": {
+        "required": [
+          "uploadId"
         ]
       },
       "UploadMultipartPartInput": {
@@ -36,6 +58,11 @@
           "uploadId",
           "archiveSize",
           "checksum"
+        ]
+      },
+      "ArchiveCreationOutput": {
+        "required": [
+          "archiveId"
         ]
       }
     }

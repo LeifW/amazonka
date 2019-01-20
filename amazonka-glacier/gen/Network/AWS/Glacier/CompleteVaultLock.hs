@@ -95,7 +95,7 @@ cvlLockId = lens _cvlLockId (\ s a -> s{_cvlLockId = a})
 
 instance AWSRequest CompleteVaultLock where
         type Rs CompleteVaultLock = CompleteVaultLockResponse
-        request = postJSON glacier
+        request = glacierVersionHeader2012 . postJSON glacier
         response = receiveNull CompleteVaultLockResponse'
 
 instance Hashable CompleteVaultLock where

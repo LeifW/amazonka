@@ -2,7 +2,7 @@ SHELL     := /usr/bin/env bash
 TOP_DIR   := ..
 MODEL_DIR := model
 OUT_DIR   := ..
-BIN_DIR   := ../bin
+BIN_DIR   := $(HOME)/.cabal/bin
 GENERATE  := $(BIN_DIR)/amazonka-gen
 STYLISH   := $(BIN_DIR)/stylish-haskell
 
@@ -46,10 +46,10 @@ format: $(STYLISH)
 	-exec sh -c "printf ' -> %s\n' $1 {}; $(STYLISH) -i {}" \;
 
 $(GENERATE): $(BIN_DIR)
-	stack install --nix amazonka-gen
+	true # cabal install
 
 $(STYLISH): $(BIN_DIR)
-	stack install --nix stylish-haskell
+	cabal install stylish-haskell
 
 $(BIN_DIR):
 	mkdir $@

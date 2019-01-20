@@ -49,9 +49,9 @@ module Network.AWS.Glacier.UploadArchive
     , archiveCreationOutput
     , ArchiveCreationOutput
     -- * Response Lenses
-    , acoArchiveId
     , acoChecksum
     , acoLocation
+    , acoArchiveId
     ) where
 
 import Network.AWS.Glacier.Types
@@ -125,14 +125,14 @@ uaBody = lens _uaBody (\ s a -> s{_uaBody = a})
 
 instance AWSRequest UploadArchive where
         type Rs UploadArchive = ArchiveCreationOutput
-        request = postBody glacier
+        request = glacierVersionHeader2012 . postBody glacier
         response
           = receiveEmpty
               (\ s h x ->
                  ArchiveCreationOutput' <$>
-                   (h .#? "x-amz-archive-id") <*>
-                     (h .#? "x-amz-sha256-tree-hash")
-                     <*> (h .#? "Location"))
+                   (h .#? "x-amz-sha256-tree-hash") <*>
+                     (h .#? "Location")
+                     <*> (h .# "x-amz-archive-id"))
 
 instance ToBody UploadArchive where
         toBody = toBody . _uaBody

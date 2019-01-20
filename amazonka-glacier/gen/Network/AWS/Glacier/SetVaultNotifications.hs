@@ -105,7 +105,7 @@ svnVaultName = lens _svnVaultName (\ s a -> s{_svnVaultName = a})
 instance AWSRequest SetVaultNotifications where
         type Rs SetVaultNotifications =
              SetVaultNotificationsResponse
-        request = putJSON glacier
+        request = glacierVersionHeader2012 . putJSON glacier
         response = receiveNull SetVaultNotificationsResponse'
 
 instance Hashable SetVaultNotifications where

@@ -102,7 +102,7 @@ amuUploadId = lens _amuUploadId (\ s a -> s{_amuUploadId = a})
 instance AWSRequest AbortMultipartUpload where
         type Rs AbortMultipartUpload =
              AbortMultipartUploadResponse
-        request = delete glacier
+        request = glacierVersionHeader2012 . delete glacier
         response = receiveNull AbortMultipartUploadResponse'
 
 instance Hashable AbortMultipartUpload where

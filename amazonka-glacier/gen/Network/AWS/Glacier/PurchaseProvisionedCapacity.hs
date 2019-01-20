@@ -69,7 +69,7 @@ ppcAccountId = lens _ppcAccountId (\ s a -> s{_ppcAccountId = a})
 instance AWSRequest PurchaseProvisionedCapacity where
         type Rs PurchaseProvisionedCapacity =
              PurchaseProvisionedCapacityResponse
-        request = postJSON glacier
+        request = glacierVersionHeader2012 . postJSON glacier
         response
           = receiveEmpty
               (\ s h x ->

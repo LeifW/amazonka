@@ -34,5 +34,17 @@
       "ListParts": ["glacierVersionHeader2012"],
       "AddTagsToVault": ["glacierVersionHeader2012"],
       "UploadArchive": ["glacierVersionHeader2012"]
+    },
+    "typeOverrides": {
+      "JobParameters": {
+      "members":{
+        "Type":{
+          "enum": ["select", "archive-retrieval", "inventory-retrieval"]
+        },
+        "Tier":{
+          "enum": ["Expedited", "Standard", "Bulk"]
+        }
+      }
+    }
     }
 }

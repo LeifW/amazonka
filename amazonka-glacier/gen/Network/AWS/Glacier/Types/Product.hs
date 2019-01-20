@@ -29,9 +29,9 @@ import Network.AWS.Prelude
 --
 -- /See:/ 'archiveCreationOutput' smart constructor.
 data ArchiveCreationOutput = ArchiveCreationOutput'
-  { _acoArchiveId :: !(Maybe Text)
-  , _acoChecksum  :: !(Maybe Text)
+  { _acoChecksum  :: !(Maybe Text)
   , _acoLocation  :: !(Maybe Text)
+  , _acoArchiveId :: !Text
   } deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
@@ -39,21 +39,21 @@ data ArchiveCreationOutput = ArchiveCreationOutput'
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'acoArchiveId' - The ID of the archive. This value is also included as part of the location.
---
 -- * 'acoChecksum' - The checksum of the archive computed by Amazon Glacier.
 --
 -- * 'acoLocation' - The relative URI path of the newly added archive resource.
+--
+-- * 'acoArchiveId' - The ID of the archive. This value is also included as part of the location.
 archiveCreationOutput
-    :: ArchiveCreationOutput
-archiveCreationOutput =
+    :: Text -- ^ 'acoArchiveId'
+    -> ArchiveCreationOutput
+archiveCreationOutput pArchiveId_ =
   ArchiveCreationOutput'
-    {_acoArchiveId = Nothing, _acoChecksum = Nothing, _acoLocation = Nothing}
+    { _acoChecksum = Nothing
+    , _acoLocation = Nothing
+    , _acoArchiveId = pArchiveId_
+    }
 
-
--- | The ID of the archive. This value is also included as part of the location.
-acoArchiveId :: Lens' ArchiveCreationOutput (Maybe Text)
-acoArchiveId = lens _acoArchiveId (\ s a -> s{_acoArchiveId = a})
 
 -- | The checksum of the archive computed by Amazon Glacier.
 acoChecksum :: Lens' ArchiveCreationOutput (Maybe Text)
@@ -63,14 +63,18 @@ acoChecksum = lens _acoChecksum (\ s a -> s{_acoChecksum = a})
 acoLocation :: Lens' ArchiveCreationOutput (Maybe Text)
 acoLocation = lens _acoLocation (\ s a -> s{_acoLocation = a})
 
+-- | The ID of the archive. This value is also included as part of the location.
+acoArchiveId :: Lens' ArchiveCreationOutput Text
+acoArchiveId = lens _acoArchiveId (\ s a -> s{_acoArchiveId = a})
+
 instance FromJSON ArchiveCreationOutput where
         parseJSON
           = withObject "ArchiveCreationOutput"
               (\ x ->
                  ArchiveCreationOutput' <$>
-                   (x .:? "x-amz-archive-id") <*>
-                     (x .:? "x-amz-sha256-tree-hash")
-                     <*> (x .:? "Location"))
+                   (x .:? "x-amz-sha256-tree-hash") <*>
+                     (x .:? "Location")
+                     <*> (x .: "x-amz-archive-id"))
 
 instance Hashable ArchiveCreationOutput where
 
@@ -1024,9 +1028,9 @@ data JobParameters = JobParameters'
   , _jpInventoryRetrievalParameters :: !(Maybe InventoryRetrievalJobInput)
   , _jpSNSTopic                     :: !(Maybe Text)
   , _jpOutputLocation               :: !(Maybe OutputLocation)
-  , _jpTier                         :: !(Maybe Text)
-  , _jpType                         :: !(Maybe Text)
+  , _jpTier                         :: !(Maybe Tier)
   , _jpDescription                  :: !(Maybe Text)
+  , _jpType                         :: !Type
   } deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
@@ -1050,12 +1054,13 @@ data JobParameters = JobParameters'
 --
 -- * 'jpTier' - The tier to use for a select or an archive retrieval job. Valid values are @Expedited@ , @Standard@ , or @Bulk@ . @Standard@ is the default.
 --
--- * 'jpType' - The job type. You can initiate a job to perform a select query on an archive, retrieve an archive, or get an inventory of a vault. Valid values are "select", "archive-retrieval" and "inventory-retrieval".
---
 -- * 'jpDescription' - The optional description for the job. The description must be less than or equal to 1,024 bytes. The allowable characters are 7-bit ASCII without control codes-specifically, ASCII values 32-126 decimal or 0x20-0x7E hexadecimal.
+--
+-- * 'jpType' - The job type. You can initiate a job to perform a select query on an archive, retrieve an archive, or get an inventory of a vault. Valid values are "select", "archive-retrieval" and "inventory-retrieval".
 jobParameters
-    :: JobParameters
-jobParameters =
+    :: Type -- ^ 'jpType'
+    -> JobParameters
+jobParameters pType_ =
   JobParameters'
     { _jpArchiveId = Nothing
     , _jpSelectParameters = Nothing
@@ -1065,8 +1070,8 @@ jobParameters =
     , _jpSNSTopic = Nothing
     , _jpOutputLocation = Nothing
     , _jpTier = Nothing
-    , _jpType = Nothing
     , _jpDescription = Nothing
+    , _jpType = pType_
     }
 
 
@@ -1099,16 +1104,16 @@ jpOutputLocation :: Lens' JobParameters (Maybe OutputLocation)
 jpOutputLocation = lens _jpOutputLocation (\ s a -> s{_jpOutputLocation = a})
 
 -- | The tier to use for a select or an archive retrieval job. Valid values are @Expedited@ , @Standard@ , or @Bulk@ . @Standard@ is the default.
-jpTier :: Lens' JobParameters (Maybe Text)
+jpTier :: Lens' JobParameters (Maybe Tier)
 jpTier = lens _jpTier (\ s a -> s{_jpTier = a})
-
--- | The job type. You can initiate a job to perform a select query on an archive, retrieve an archive, or get an inventory of a vault. Valid values are "select", "archive-retrieval" and "inventory-retrieval".
-jpType :: Lens' JobParameters (Maybe Text)
-jpType = lens _jpType (\ s a -> s{_jpType = a})
 
 -- | The optional description for the job. The description must be less than or equal to 1,024 bytes. The allowable characters are 7-bit ASCII without control codes-specifically, ASCII values 32-126 decimal or 0x20-0x7E hexadecimal.
 jpDescription :: Lens' JobParameters (Maybe Text)
 jpDescription = lens _jpDescription (\ s a -> s{_jpDescription = a})
+
+-- | The job type. You can initiate a job to perform a select query on an archive, retrieve an archive, or get an inventory of a vault. Valid values are "select", "archive-retrieval" and "inventory-retrieval".
+jpType :: Lens' JobParameters Type
+jpType = lens _jpType (\ s a -> s{_jpType = a})
 
 instance Hashable JobParameters where
 
@@ -1126,8 +1131,9 @@ instance ToJSON JobParameters where
                     _jpInventoryRetrievalParameters,
                   ("SNSTopic" .=) <$> _jpSNSTopic,
                   ("OutputLocation" .=) <$> _jpOutputLocation,
-                  ("Tier" .=) <$> _jpTier, ("Type" .=) <$> _jpType,
-                  ("Description" .=) <$> _jpDescription])
+                  ("Tier" .=) <$> _jpTier,
+                  ("Description" .=) <$> _jpDescription,
+                  Just ("Type" .= _jpType)])
 
 -- | Contains information about the location where the select job results are stored.
 --

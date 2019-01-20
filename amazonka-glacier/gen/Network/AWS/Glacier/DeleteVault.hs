@@ -84,7 +84,7 @@ dVaultName = lens _dVaultName (\ s a -> s{_dVaultName = a})
 
 instance AWSRequest DeleteVault where
         type Rs DeleteVault = DeleteVaultResponse
-        request = delete glacier
+        request = glacierVersionHeader2012 . delete glacier
         response = receiveNull DeleteVaultResponse'
 
 instance Hashable DeleteVault where

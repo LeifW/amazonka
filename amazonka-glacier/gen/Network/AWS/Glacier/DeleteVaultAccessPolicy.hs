@@ -82,7 +82,7 @@ dvapVaultName = lens _dvapVaultName (\ s a -> s{_dvapVaultName = a})
 instance AWSRequest DeleteVaultAccessPolicy where
         type Rs DeleteVaultAccessPolicy =
              DeleteVaultAccessPolicyResponse
-        request = delete glacier
+        request = glacierVersionHeader2012 . delete glacier
         response
           = receiveNull DeleteVaultAccessPolicyResponse'
 

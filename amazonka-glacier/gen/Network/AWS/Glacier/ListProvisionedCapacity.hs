@@ -69,7 +69,7 @@ lpcAccountId = lens _lpcAccountId (\ s a -> s{_lpcAccountId = a})
 instance AWSRequest ListProvisionedCapacity where
         type Rs ListProvisionedCapacity =
              ListProvisionedCapacityResponse
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response
           = receiveJSON
               (\ s h x ->

@@ -43,11 +43,11 @@ module Network.AWS.Glacier.UploadMultipartPart
       uploadMultipartPart
     , UploadMultipartPart
     -- * Request Lenses
-    , umpChecksum
-    , umpRange
     , umpAccountId
     , umpVaultName
     , umpUploadId
+    , umpRange
+    , umpChecksum
     , umpBody
 
     -- * Destructuring the Response
@@ -71,11 +71,11 @@ import Network.AWS.Response
 --
 -- /See:/ 'uploadMultipartPart' smart constructor.
 data UploadMultipartPart = UploadMultipartPart'
-  { _umpChecksum  :: !(Maybe Text)
-  , _umpRange     :: !(Maybe Text)
-  , _umpAccountId :: !Text
+  { _umpAccountId :: !Text
   , _umpVaultName :: !Text
   , _umpUploadId  :: !Text
+  , _umpRange     :: !Text
+  , _umpChecksum  :: !Text
   , _umpBody      :: !HashedBody
   } deriving (Show, Generic)
 
@@ -84,41 +84,35 @@ data UploadMultipartPart = UploadMultipartPart'
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'umpChecksum' - The SHA256 tree hash of the data being uploaded.
---
--- * 'umpRange' - Identifies the range of bytes in the assembled archive that will be uploaded in this part. Amazon Glacier uses this information to assemble the archive in the proper sequence. The format of this header follows RFC 2616. An example header is Content-Range:bytes 0-4194303/*.
---
 -- * 'umpAccountId' - The @AccountId@ value is the AWS account ID of the account that owns the vault. You can either specify an AWS account ID or optionally a single '@-@ ' (hyphen), in which case Amazon Glacier uses the AWS account ID associated with the credentials used to sign the request. If you use an account ID, do not include any hyphens ('-') in the ID.
 --
 -- * 'umpVaultName' - The name of the vault.
 --
 -- * 'umpUploadId' - The upload ID of the multipart upload.
 --
+-- * 'umpRange' - Identifies the range of bytes in the assembled archive that will be uploaded in this part. Amazon Glacier uses this information to assemble the archive in the proper sequence. The format of this header follows RFC 2616. An example header is Content-Range:bytes 0-4194303/*.
+--
+-- * 'umpChecksum' - The SHA256 tree hash of the data being uploaded.
+--
 -- * 'umpBody' - The data to upload.
 uploadMultipartPart
     :: Text -- ^ 'umpAccountId'
     -> Text -- ^ 'umpVaultName'
     -> Text -- ^ 'umpUploadId'
+    -> Text -- ^ 'umpRange'
+    -> Text -- ^ 'umpChecksum'
     -> HashedBody -- ^ 'umpBody'
     -> UploadMultipartPart
-uploadMultipartPart pAccountId_ pVaultName_ pUploadId_ pBody_ =
+uploadMultipartPart pAccountId_ pVaultName_ pUploadId_ pRange_ pChecksum_ pBody_ =
   UploadMultipartPart'
-    { _umpChecksum = Nothing
-    , _umpRange = Nothing
-    , _umpAccountId = pAccountId_
+    { _umpAccountId = pAccountId_
     , _umpVaultName = pVaultName_
     , _umpUploadId = pUploadId_
+    , _umpRange = pRange_
+    , _umpChecksum = pChecksum_
     , _umpBody = pBody_
     }
 
-
--- | The SHA256 tree hash of the data being uploaded.
-umpChecksum :: Lens' UploadMultipartPart (Maybe Text)
-umpChecksum = lens _umpChecksum (\ s a -> s{_umpChecksum = a})
-
--- | Identifies the range of bytes in the assembled archive that will be uploaded in this part. Amazon Glacier uses this information to assemble the archive in the proper sequence. The format of this header follows RFC 2616. An example header is Content-Range:bytes 0-4194303/*.
-umpRange :: Lens' UploadMultipartPart (Maybe Text)
-umpRange = lens _umpRange (\ s a -> s{_umpRange = a})
 
 -- | The @AccountId@ value is the AWS account ID of the account that owns the vault. You can either specify an AWS account ID or optionally a single '@-@ ' (hyphen), in which case Amazon Glacier uses the AWS account ID associated with the credentials used to sign the request. If you use an account ID, do not include any hyphens ('-') in the ID.
 umpAccountId :: Lens' UploadMultipartPart Text
@@ -132,6 +126,14 @@ umpVaultName = lens _umpVaultName (\ s a -> s{_umpVaultName = a})
 umpUploadId :: Lens' UploadMultipartPart Text
 umpUploadId = lens _umpUploadId (\ s a -> s{_umpUploadId = a})
 
+-- | Identifies the range of bytes in the assembled archive that will be uploaded in this part. Amazon Glacier uses this information to assemble the archive in the proper sequence. The format of this header follows RFC 2616. An example header is Content-Range:bytes 0-4194303/*.
+umpRange :: Lens' UploadMultipartPart Text
+umpRange = lens _umpRange (\ s a -> s{_umpRange = a})
+
+-- | The SHA256 tree hash of the data being uploaded.
+umpChecksum :: Lens' UploadMultipartPart Text
+umpChecksum = lens _umpChecksum (\ s a -> s{_umpChecksum = a})
+
 -- | The data to upload.
 umpBody :: Lens' UploadMultipartPart HashedBody
 umpBody = lens _umpBody (\ s a -> s{_umpBody = a})
@@ -139,7 +141,7 @@ umpBody = lens _umpBody (\ s a -> s{_umpBody = a})
 instance AWSRequest UploadMultipartPart where
         type Rs UploadMultipartPart =
              UploadMultipartPartResponse
-        request = putBody glacier
+        request = glacierVersionHeader2012 . putBody glacier
         response
           = receiveEmpty
               (\ s h x ->
@@ -153,8 +155,8 @@ instance ToBody UploadMultipartPart where
 instance ToHeaders UploadMultipartPart where
         toHeaders UploadMultipartPart'{..}
           = mconcat
-              ["x-amz-sha256-tree-hash" =# _umpChecksum,
-               "Content-Range" =# _umpRange]
+              ["Content-Range" =# _umpRange,
+               "x-amz-sha256-tree-hash" =# _umpChecksum]
 
 instance ToPath UploadMultipartPart where
         toPath UploadMultipartPart'{..}

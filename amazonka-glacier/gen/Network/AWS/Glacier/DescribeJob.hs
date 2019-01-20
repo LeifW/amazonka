@@ -116,7 +116,7 @@ djJobId = lens _djJobId (\ s a -> s{_djJobId = a})
 
 instance AWSRequest DescribeJob where
         type Rs DescribeJob = GlacierJobDescription
-        request = get glacier
+        request = glacierVersionHeader2012 . get glacier
         response = receiveJSON (\ s h x -> eitherParseJSON x)
 
 instance Hashable DescribeJob where
